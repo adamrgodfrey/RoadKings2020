@@ -1,0 +1,143 @@
+#config_version=5
+
+
+
+#      __  ___          __          __                             __      __                        __
+#     /  |/  /___  ____/ /__  _    / /_____  ____ ___  _________ _/ /_    / /_____ __________ ____  / /______
+#    / /|_/ / __ \/ __  / _ \(_)  / __/ __ \/ __ `__ \/ ___/ __ `/ __/   / __/ __ `/ ___/ __ `/ _ \/ __/ ___/
+#   / /  / / /_/ / /_/ /  __/    / /_/ /_/ / / / / / / /__/ /_/ / /_    / /_/ /_/ / /  / /_/ /  __/ /_(__  )
+#  /_/  /_/\____/\__,_/\___(_)   \__/\____/_/ /_/ /_/\___/\__,_/\__/____\__/\__,_/_/   \__, /\___/\__/____/
+#                                                                 /_____/             /____/
+
+# This mode generally runs if there is a ball in play.  It handles both sets of T-O-M-C-A-T targets
+
+# The top and bottom sets of targets work as a single set - so hitting the letter 'M' in the top set
+# also spots it in the lower set and vice-versa.
+# Getting all the letters lit will light a lock and then start over.
+# Other things going on in the game can also spot a random letter
+
+mode:
+   start_events: ball_starting
+   priority: 120
+
+event_player:
+#   tomcat_hit: # in any state, event is from the shot group in this mode
+#      - increment_bonus # handled by the bonus_manager mode
+   kings_lit_complete{current_player.lock1_status=='unlit' and device.multiballs.tomcat_multiball.enabled==False}:
+      - light_lock_1 # This will need to get more clever, but for now just enable lock 1
+   kings_lit_complete{current_player.lock2_status=='unlit' and device.multiballs.tomcat_multiball.enabled==False}:
+      - light_lock_2 # This will need to get more clever, but for now just enable lock 2
+   kings_lit_complete{current_player.lock3_status=='unlit' and device.multiballs.tomcat_multiball.enabled==False}:
+      - light_lock_3 # This will need to get more clever, but for now just enable lock 3
+   # These ones will handle an event which should spot a random letter
+   # The "attempt_spot" events are generated from the random_player in this mode.  If the attempt is made on a target
+   # which is not currently lit, then it can be spotted.  This is done by generating the 'spot' event for that letter
+   # which in turn is picked up as a hit_event by the shot
+   # If however the attempt is for a target which is already lit, then we just call the spot_tomcat_letter again which
+   # will give us a different target - eventually this will return an unlit target
+   # TODO work out a way to do this that isn't so pig-ugly
+   attempt_spot_road_k{device.shots.road_k.state_name!='lit'}:
+      - spot_road_k
+   attempt_spot_road_k{device.shots.road_k.state_name=='lit'}:
+      - spot_road_letter
+   attempt_spot_road_i{device.shots.road_i.state_name!='lit'}:
+      - spot_road_i
+   attempt_spot_road_i{device.shots.road_i.state_name=='lit'}:
+      - spot_road_letter
+   attempt_spot_road_n{device.shots.road_n.state_name!='lit'}:
+      - spot_road_n
+   attempt_spot_road_n{device.shots.road_n.state_name=='lit'}:
+      - spot_road_letter
+   attempt_spot_road_g{device.shots.road_g.state_name!='lit'}:
+      - spot_road_g
+   attempt_spot_road_g{device.shots.road_g.state_name=='lit'}:
+      - spot_road_letter
+   attempt_spot_road_s{device.shots.road_s.state_name!='lit'}:
+      - spot_road_s
+   attempt_spot_road_s{device.shots.road_s.state_name=='lit'}:
+      - spot_road_letter
+
+
+
+variable_player:
+    kings_flashing_hit:
+       score: 5000
+    kings_lit_hit:
+       score: 1000
+
+slide_player:
+  kigs_lit_complete:
+     slide_tomcat:
+        target: dmd
+        expire: 1s
+        widgets:
+          - type: text
+            text: KINGS
+            font_size: 15
+            color: blue
+
+# This player is the handler for the generic "spot_tomcat_letter" event that can be posted from
+# elsewhere.  It will generate an event which is used to attempt to spot a random letter
+random_event_player:
+   spot_road_letter:
+      events:
+         - attempt_spot_road_r
+         - attempt_spot_road_o
+         - attempt_spot_road_a
+         - attempt_spot_road_d
+         - attempt_spot_road_k
+         - attempt_spot_road_i
+         - attempt_spot_road_n
+         - attempt_spot_road_g
+         - attempt_spot_road_s
+
+
+shots:
+  road_k:
+    switches: s_k_target
+    show_tokens:
+       lights: l_k_target
+    profile: road_profile
+    hit_events: spot_road_k
+  road_i:
+    switches: s_i_target
+    show_tokens:
+       lights: l_i_target
+    profile: road_profile
+    hit_events: spot_road_i
+  road_n:
+    switches: s_n_target
+    show_tokens:
+       lights: l_n_target
+    hit_events: spot_road_n
+    profile: road_profile
+  road_g:
+    switches: s_g_target
+    show_tokens:
+       lights: l_g_target
+    profile: road_profile
+    hit_events: spot_road_g
+  road_s:
+    switches: s_s_target
+    show_tokens:
+       lights: l_s_target
+    profile: road_profile
+    hit_events: spot_road_s
+
+
+
+shot_profiles:
+  road_profile:
+    states:
+      - name: flashing  # step 1
+        show: flash
+        speed: 6
+      - name: lit  # step 2
+        show: on
+    loop: false
+
+
+shot_groups:
+   kings:
+      shots: road_k spot_road_i road_n road_g road_s
+      restart_events: roadkings_complete

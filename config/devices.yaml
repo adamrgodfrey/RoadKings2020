@@ -1,0 +1,70 @@
+#config_version=5
+
+
+#     ______            _____                __          _
+#    / ____/___  ____  / __(_)___ __    ____/ /__ _   __(_)_______  _____
+#   / /   / __ \/ __ \/ /_/ / __ `(_)  / __  / _ \ | / / / ___/ _ \/ ___/
+#  / /___/ /_/ / / / / __/ / /_/ /    / /_/ /  __/ |/ / / /__/  __(__  )
+#  \____/\____/_/ /_/_/ /_/\__, (_)   \__,_/\___/|___/_/\___/\___/____/
+#                         /____/
+
+
+# Once we get to sorting out multiball we might need to get more clever
+ball_devices:
+   bd_drain:
+      ball_switches: s_outhole
+      eject_coil: c_outhole
+      eject_targets: bd_trough
+      tags: drain
+   bd_trough:
+      ball_switches: s_l_trough s_r_trough
+      eject_coil: c_ball_trough_feeder
+      eject_targets: bd_plunger_lane
+      tags: home, trough
+   bd_plunger_lane:
+      ball_switches: s_ball_shooter
+      mechanical_eject: true
+#      eject_coil: c_autoLaunch
+      entrance_count_delay: 1s
+#      confirm_eject_type: event
+#      confirm_eject_event : ball_cleared_ramp
+#      eject_targets: bd_lock1, bd_lock2, bd_lock3
+   bd_lock1:
+      ball_switches: s_l_eject
+      eject_coil: c_left_eject_hole
+      request_ball_events: catch1
+      eject_events: eject_lock1
+      confirm_eject_type: event
+      confirm_eject_event: sw_playfield_active
+#      entrance_events: s_lock1_ramp_active
+#      entrance_event_timeout: 0.2s
+#      exit_count_delay: 100ms
+#      entrance_count_delay: 100ms
+#      entrance_count_delay: 1.5s
+#      max_eject_attempts: 1
+      debug: true
+   bd_lock2:
+      ball_switches: s_c_eject
+      eject_coil: c_center_eject_hole
+      request_ball_events: catch2
+      eject_events: eject_lock2
+      confirm_eject_type: event
+      confirm_eject_event: sw_playfield_active
+   bd_lock3:
+      ball_switches: s_upper_left_kicker
+      eject_coil: c_upper_left_kicker
+      request_ball_events: catch3
+      eject_events: eject_lock3
+      confirm_eject_type: event
+      confirm_eject_event: sw_playfield_active
+      debug: true      
+#   bd_vuk:
+#      ball_switches: s_vUK
+#      eject_coil: c_upKicker
+#      confirm_eject_type: event
+#      confirm_eject_event : ball_cleared_ramp
+#      eject_targets: bd_lock1, bd_lock2, bd_lock3
+extra_ball_groups:
+    no_memory:
+      lit_memory: false
+      max_per_game: 2

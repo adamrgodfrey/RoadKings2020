@@ -1,0 +1,150 @@
+#config_version=5
+
+
+#      __  ___          __          __
+#     /  |/  /___  ____/ /__  _    / /_  ____ _________
+#    / /|_/ / __ \/ __  / _ \(_)  / __ \/ __ `/ ___/ _ \
+#   / /  / / /_/ / /_/ /  __/    / /_/ / /_/ (__  )  __/
+#  /_/  /_/\____/\__,_/\___(_)  /_.___/\__,_/____/\___/
+#
+
+# All the basic things that the game needs to handle when a ball is in play.
+# TODO - move the TOMCAT target handling into it's own mode
+
+mode:
+   start_events: ball_starting
+   priority: 100
+
+# Some scoring which is independant of the mode we're in
+variable_player:
+    s_l_jet_active:
+       score: 5000 * current_player.playfield_multiplier_value
+    s_r_10_point_active:
+       score: 100 * current_player.playfield_multiplier_value
+    s_r_jet_active:
+       score: 1000 * current_player.playfield_multiplier_value
+    s_upper_left_kicker_active:
+       score: 15000 * current_player.playfield_multiplier_value
+    s_bottom_jet_active:
+       score: 1000 * current_player.playfield_multiplier_value
+    s_r_rollunder_active:
+       score: 10 * current_player.playfield_multiplier_value
+    s_l_kicker_active:
+       score: 10 * current_player.playfield_multiplier_value
+#    s_l_outlane_active:
+#       score: 5000
+    s_l_rollunder_active:
+       score: 10 * current_player.playfield_multiplier_value
+    s_r_kicker_active:
+       score: 10 * current_player.playfield_multiplier_value
+    s_r_outlane_active:
+       score: 25000 * current_player.playfield_multiplier_value
+    s_l_10_point_active:
+       score: 100 * current_player.playfield_multiplier_value
+    s_r_ramp_enter_active:
+       score: 10 * current_player.playfield_multiplier_value
+    s_drop_target_active:
+       score: 5000 * current_player.playfield_multiplier_value
+    s_r_ramp_left_active:
+       score: 10 * current_player.playfield_multiplier_value
+    s_c_ramp_enter_active:
+       score: 10 * current_player.playfield_multiplier_value
+    s_top_jet_active:
+       score: 1000 * current_player.playfield_multiplier_value
+    s_cent_ramp_r_exit_active:
+       score: 5000 * current_player.playfield_multiplier_value
+
+
+
+extra_balls:
+    drop_target_eb:
+      award_events: award_drop_target_eb
+      light_events: light_drop_target_eb
+      group: no_memory
+    mb_eb:
+      award_events: award_mb_eb
+      light_events: light_mb_eb
+      group: no_memory
+    bonus_eb:
+      award_events: award_bonus_eb
+      light_events: light_bonus_eb
+      group: no_memory
+
+
+
+#    mode_base_started:
+#       launch_bonus:
+#          action: set
+#          int: 0
+
+
+
+# Need to switch the flippers on and off (System 11!)
+event_player:
+   mode_base_started:
+      - flipper_on
+#   mode_base_started{s_drop_target_active}:
+      - drop_target_reset
+      - lower_ramp
+   mode_base_ended:
+      - flipper_off
+#   s_inlaneLeft_active:
+#      - spot_tomcat_letter
+#   s_drop_target_active:
+#      - spot_road_letter
+   s_c_ramp_enter_active:
+      - spot_road_letter
+   s_r_ramp_left_active:
+      - spot_road_letter
+
+
+
+slide_player:
+  mode_base_started:
+      slide1:
+        target: dmd
+        widgets:
+          - type: text
+            text: (score)
+            number_grouping: true
+            min_digits: 2
+            font_size: 15
+            font_name: DSEG14Classic-Bold
+            color: F0A50E            
+      slide2:
+         target: dmd_mini
+         widgets:
+          - type: text
+            text: PLAYER (number)
+            color: deepskyblue
+            y: 9
+            x: 1
+            font_size: 8
+            anchor_x: left
+            anchor_y: bottom
+            font_name: fixed_01
+          - type: text
+            color: red
+            text: BALL (ball)
+            y: 1
+            x: 1
+            anchor_x: left
+            anchor_y: bottom
+            font_size: 8
+            font_name: fixed_01
+          - type: text
+            color: orange
+            text: RESCUE (kickback_status)
+            y: 18
+            x: 1
+            anchor_x: left
+            anchor_y: bottom
+            font_size: 8
+            font_name: fixed_01
+
+
+sound_player:
+   mode_base_started:
+      main_theme:
+         action: play
+         loops: -1

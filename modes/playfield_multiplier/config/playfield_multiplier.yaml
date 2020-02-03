@@ -1,0 +1,35 @@
+#config_version=5
+
+#      __  ___          __
+#     /  |/  /___  ____/ /__  _    __  ______ _____ _____ _   __
+#    / /|_/ / __ \/ __  / _ \(_)  / / / / __ `/ __ `/ __ \ | / /
+#   / /  / / /_/ / /_/ /  __/    / /_/ / /_/ / /_/ / /_/ / |/ /
+#  /_/  /_/\____/\__,_/\___(_)   \__, /\__,_/\__, /\____/|___/
+#                               /____/      /____/
+
+# The shot to the Yagov kicker at the top left awards a kill.  Getting all 7 kills lights
+# the extra ball shot.  Each shot to Yagov also awards 5k to the end of ball bonus
+# TODO - when does this reset?
+
+mode:
+   start_events: ball_starting
+   priority: 100
+
+
+
+
+#event_player:
+#   s_yagov_active:
+#      - increment_bonus_5k # Event is handled by the bonus_manager mode
+
+variable_player:
+   mode_base_started:
+      playfield_multiplier_value:
+         action: set
+         int: 1
+   multiball_tomcat_multiball_started:
+      playfield_multiplier_value:
+         action: set
+         int: 2
+
+#slide_player:

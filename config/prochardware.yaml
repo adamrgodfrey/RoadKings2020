@@ -1,0 +1,455 @@
+#config_version=5
+
+
+#     ______            _____                                  __                   __
+#    / ____/___  ____  / __(_)___ __    ____  _________  _____/ /_  ____ __________/ /      ______ _________
+#   / /   / __ \/ __ \/ /_/ / __ `(_)  / __ \/ ___/ __ \/ ___/ __ \/ __ `/ ___/ __  / | /| / / __ `/ ___/ _ \
+#  / /___/ /_/ / / / / __/ / /_/ /    / /_/ / /  / /_/ / /__/ / / / /_/ / /  / /_/ /| |/ |/ / /_/ / /  /  __/
+#  \____/\____/_/ /_/_/ /_/\__, (_)  / .___/_/   \____/\___/_/ /_/\__,_/_/   \__,_/ |__/|__/\__,_/_/   \___/
+#                         /____/    /_/
+
+# This machine is a bit of a hybrid.  It's a Sys11 controlled by a P-ROC with one of my Sys11 driver boards.
+# Most of the lights are just the matrix driven ones, but where there are clear inserts these have RGB (actually GRB) LEDs
+# (the nice little ones from FAST) controlled by a Fadecandy.  The GI is also a string of RGB lamps, and the central
+# 'radar' insert has a RGB LED ring underneath it (instead of the green GI lamps that it originally has)
+
+hardware:
+    platform: p_roc
+    driverboards: wpc
+    coils: snux
+#    lights: fadecandy
+
+system11:
+    ac_relay_delay_ms: 75
+    ac_relay_driver: c_acSelect
+
+snux:
+    diag_led_driver: c_diag_led_driver
+
+
+
+lights:
+#    l_lightLockOn:
+#        number: L11
+#        label: 'Lites Lock On'
+#        platform: p_roc
+    l_game_over_backbox:
+      number: L11
+      tags: game_over
+    l_match_backbox:
+      number: L12
+      tags: match
+    l_shoot_again_backbox:
+      number: L13
+      tags: shoot_again
+    l_ball_in_play_backbox:
+      number: L14
+    l_hold_bonus:
+      number: L15
+    l_spots_letter:
+      number: L16
+    l_left_lock:
+      number: L17
+    l_center_lock:
+      number: L18
+    l_r_target:
+      number: L21
+    l_o_target:
+      number: L22
+    l_a_target:
+      number: L23
+    l_d_target:
+      number: L24
+    l_k_target:
+      number: L25
+    l_i_target:
+      number: L26
+    l_n_target:
+      number: L27
+    l_g_target:
+      number: L28
+    l_s_target:
+      number: L31
+    l_lane_1:
+      number: L32
+    l_lane_2:
+      number: L33
+    l_lane_4:
+      number: L34
+    l_lane_3:
+      number: L35
+    l_bonus_hold_when_lit:
+      number: L36
+    l_all_scores_doubled:
+      number: L37
+    l_l_collect_detour:
+      number: L38
+    l_r_collect_detour:
+      number: L41
+    l_l_time_lock:
+      number: L42
+    l_c_time_lock:
+      number: L43
+    l_power_kick:
+      number: L44
+    l_r_special:
+      number: L45
+    l_l_special:
+      number: L46
+    l_r_time_lock:
+      number: L47
+    l_r_lock:
+      number: L48
+    l_r_extra_ball:
+      number: L51
+    l_mega_score:
+      number: L52
+    l_2x:
+      number: L53
+    l_3x:
+      number: L54
+    l_4x:
+      number: L55
+    l_5x:
+      number: L56
+    l_bonus_10k:
+      number: L57
+    l_bonus_20k:
+      number: L58
+    l_bonus_40k:
+      number: L61
+    l_bonus_60k:
+      number: L62
+    l_bonus_80k:
+      number: L63
+    l_cruise_again:
+      number: L64
+    l_bonus_1k:
+      number: L65
+    l_bonus_2k:
+      number: L66
+    l_bonus_3k:
+      number: L67
+    l_bonus_4k:
+      number: L68
+    l_bonus_5k:
+      number: L71
+    l_bonus_6k:
+      number: L72
+    l_bonus_7k:
+      number: L73
+    l_bonus_8k:
+      number: L74
+    l_bonus_9k:
+      number: L75
+    l_center_extra_ball:
+      number: L76
+    l_detour_when_lit:
+      number: L77
+
+
+
+
+coils:
+    c_outhole:
+      number: c01
+      default_pulse_ms: 30
+    c_ball_trough_feeder:
+      number: c02
+      default_pulse_ms: 20
+    c_left_eject_hole:
+      number: c03
+      default_pulse_ms: 30
+    c_center_eject_hole:
+      number: c04
+      default_pulse_ms: 30
+    c_upper_left_kicker:
+      number: c05c
+      default_pulse_ms: 30
+    c_power_kicker_l_outlane:
+      number: c06
+      label: 'Rescue Kickback'
+      platform: p_roc
+#      pulse_events: s_l_outlane_active
+    c_l_gate:
+      number: c09
+      allow_enable: true
+      enable_events: d_l_gate_enable
+      disable_events: d_l_gate_disable
+      default_pulse_ms: 20
+    c_r_gate:
+      number: c10
+      allow_enable: true
+      enable_events: d_r_gate_enable
+      disable_events: d_r_gate_disable
+      default_pulse_ms: 20
+    c_gen_illumination_relay:
+      number: c11
+      allow_enable: true
+      enable_events: gen_illum__disable
+      disable_events: gen_illum_enable
+    c_acSelect:
+      number: c12
+      allow_enable: true
+      default_hold_power: 1.0
+    c_knocker:
+      number: c13a
+    c_ramp_up:
+      number: c13c
+      pulse_events: raise_ramp
+      default_pulse_ms: 20
+    c_ramp_down:
+      number: c14c
+      pulse_events: lower_ramp
+      default_pulse_ms: 20
+    c_drop_target:
+      number: c15c
+      pulse_events: drop_target_reset
+      default_pulse_ms: 30
+    c_coin_lockout:
+      number: c16
+    c_left_kicker:
+      number: c17
+    c_right_kicker:
+      number: c18
+    c_upper_jet_bumper:
+      number: c19
+    c_left_jet_bumper:
+      number: c20
+    c_right_jet_bumper:
+      number: c21
+    c_lower_jet_bumper:
+      number: c22
+    c_flipper_enable_driver:
+      number: c23
+      label: 'Flipper Enable'
+      allow_enable: true
+      enable_events: flipper_on
+      disable_events: flipper_off
+    c_diag_led_driver:
+      number: c24
+      allow_enable: true
+      file_log: none
+      console_log: none
+
+
+    f_rear_playfield_flashers:
+      number: c05a
+      label: 'rear_playfield_flash'
+      pulse_events: rear_playfield_flash
+      default_pulse_ms: 200ms
+    f_l_lightning_bolt:
+      number: c07
+      label: 'l_lightning_bolt'
+      pulse_events: left_lightning_bolt_flash
+      default_pulse_ms: 200ms
+    f_r_lightning_bolt:
+      number: c08
+      label: 'r_lightning_bolt'
+      pulse_events: right_lightning_bolt_flash
+      default_pulse_ms: 200ms
+    f_mid_insert_board:
+      number: c14a
+      label: 'mid_insert_board'
+      pulse_events: mid_insert_board_flash
+      default_pulse_ms: 200ms
+    f_bikes_flasher:
+      number: c15a
+      label: 'bikes_flasher'
+      pulse_events: bikes_flash
+      default_pulse_ms: 200ms
+
+
+switches:
+
+    s_upSys11:
+        number: SD8
+    s_downSys11:
+        number: SD2
+    s_enterSys11:
+        number: SD5
+    s_exitSys11:
+        number: SD0
+    s_plumb_bob_tilt:
+      number: S11
+      label: Plumb Bob Tilt
+      tags: tilt
+    s_r_target:
+      number: S21
+      label: R Target
+      tags: playfield_active
+    s_s_target:
+      number: S31
+      label: S Target
+      tags: playfield_active
+    s_l_jet:
+      number: S41
+      label: Left Jet Bumper
+      tags: playfield_active
+    s_r_10_point:
+      number: S51
+      label: Right 10 point
+      tags: playfield_active
+    s_r_trough:
+      number: S61
+      label: Right Trough
+  #    tags: playfield_active
+    s_ball_roll_tilt:
+      number: S12
+      label: Ball Roll Tilt
+    s_o_target:
+      number: S22
+      label: O Target
+      tags: playfield_active
+    s_lane_1:
+      number: S32
+      label: Lane 1
+      tags: playfield_active
+    s_r_jet:
+      number: S42
+      label: Right Jet Bumper
+      tags: playfield_active
+    s_upper_left_kicker:
+      number: S52
+      label: Upper Left Kicker
+    s_l_trough:
+      number: S62
+      label: Left Trough
+    s_credit_button:
+      number: S13
+      label: Credit Button
+      tags: start
+    s_a_target:
+      number: S23
+      label: A Target
+      tags: playfield_active
+    s_lane_2:
+      number: S33
+      label: Lane 2
+      tags: playfield_active
+    s_bottom_jet:
+      number: S43
+      label: Bottom Jet Bumper
+      tags: playfield_active
+    s_r_rollunder:
+      number: S53
+      label: Right Roll Under
+      tags: playfield_active
+    s_l_kicker:
+      number: S63
+      label: Left Kicker
+      tags: playfield_active
+    s_r_coin:
+      number: S14
+      label: Right Coin Shoot
+    s_d_target:
+      number: S24
+      label: D Target
+      tags: playfield_active
+    s_lane_4:
+      number: S34
+      label: Lane 4
+      tags: playfield_active
+    s_l_outlane:
+      number: S44
+      label: Left Outlane
+#      tags: playfield_active
+    s_l_rollunder:
+      number: S54
+      label: Left Rollunder
+      tags: playfield_active
+    s_r_kicker:
+      number: S64
+      label: Right Kicker
+    s_c_coin:
+      number: S15
+      label: Center Coin Shoot
+    s_k_target:
+      number: S25
+      label: K Target
+      tags: playfield_active
+    s_lane_3:
+      number: S35
+      label: Lane 3
+      tags: playfield_active
+    s_r_outlane:
+      number: S45
+      label: Right Outlane
+      tags: playfield_active
+    s_l_eject:
+      number: S55
+      label: Left Eject
+    s_l_10_point:
+      number: S65
+      label: Left 10 Point
+      tags: playfield_active
+    s_l_coin:
+      number: S16
+      label: Left Coin Shoot
+    s_i_target:
+      number: S26
+      label: I Target
+      tags: playfield_active
+    s_r_ramp_enter:
+      number: S36
+      label: Right Ramp Enter
+      tags: playfield_active
+    s_drop_target:
+      number: S46
+      label: Drop Target
+      tags: playfield_active
+    s_c_eject:
+      number: S56
+      label: Center Eject
+#      tags: playfield_active
+    s_pf_tilt:
+      number: S66
+      label: Playfield Tilt
+      tags: playfield_active, tilt
+    s_r_ramp_left:
+      number: s76
+      tags: playfield_active
+    s_slam_tilt:
+      number: S17
+      label: slam_tilt
+    s_n_target:
+      number: S27
+      label: N Target
+      tags: playfield_active
+    s_ramp_raise_eos:
+      number: S37
+      label: Ramp Raise EOS
+  #    tags: playfield_active
+    s_c_ramp_enter:
+      number: S47
+      label: Center Ramp Enter
+      tags: playfield_active
+    s_ball_shooter:
+      number: S57
+      label: Ball Shooter
+    s_l_flipper_eos:
+      number: S67
+      label: Left Flipper EOS
+      tags: left_flipper
+    s_hi_score_reset:
+      number: S18
+      label: High Score Reset
+    s_g_target:
+      number: S28
+      label: G Target
+      tags: playfield_active
+    s_top_jet:
+      number: S38
+      label: Top Jet Bumper
+      tags: playfield_active
+    s_cent_ramp_r_exit:
+      number: S48
+      label: Center Ramp Right Exit
+      tags: playfield_active
+    s_outhole:
+      number: S58
+      label: Outhole
+    s_r_flipper_eos:
+      number: S68
+      label: Right Flipper EOS
+      tags: right_flipper

@@ -1,0 +1,128 @@
+#config_version=5
+
+
+#      __  ___          __                     __    _ __
+#     /  |/  /___  ____/ /__  _    ____  _____/ /_  (_) /_
+#    / /|_/ / __ \/ __  / _ \(_)  / __ \/ ___/ __ \/ / __/
+#   / /  / / /_/ / /_/ /  __/    / /_/ / /  / /_/ / / /_
+#  /_/  /_/\____/\__,_/\___(_)   \____/_/  /_.___/_/\__/
+#
+
+# Runs during game play and handles everything to do with the top orbit.
+#
+# The orbit contains a spinner which scores 10 unless lit when it scores 2000
+
+# Both sides of the orbit have a bonux multiplier insert.  These can be lit by
+# A - the inlanes - left inlane lights the right multiplier, right inlane lights the left.
+# B - hitting the lit 1-6 target (check the targets1_6 mode) lights both multipliers.
+# Both multipliers flash when active and then expire after 10 seconds.
+
+# To score the multiplier, the orbit shot needs to complete - there is a switch at both ends.
+
+# This mode will just post the event that the multiplier should be increased, this is
+# handled in the bonus_manager mode.
+
+# TODO - maybe move all this into the bonus_manager, it's pretty much all bonus related anyway
+
+mode:
+   start_events: ball_starting
+   priority: 110
+
+# A couple of sequence shots defined that will catch when the ball does a proper orbit
+# instead of entering and then rolling back out again
+
+#sequence_shots:
+#   orbit_left_to_right:
+#      switch_sequence: s_bonusXLeft, s_bonusXRight
+#      sequence_timeout: 1.5s # quick timeout as it's a short fast loop
+##      switch_sequence: s_bonusXRight, s_bonusXLeft
+  #    sequence_timeout: 1.5s # quick timeout as it's a short fast loop
+
+# Turn events (including those from other modes) into something easier to read
+event_player:
+   group_lanes_lit_complete:    # will be handled by bonus_manager
+      - add_to_multiplier
+   group_lanes_lit_hit:
+      - light_drop_letter
+
+# Track which of the multipliers are lit
+variable_player:
+
+   group_lanes_lit_hit:
+      score: 1000
+   group_lanes_unlit_hit:
+      score: 2000
+
+
+# Couple of timers, one for each multiplier insert
+# Just make one big tick, we don't need a countdown
+#timers:
+#   right_multiplier:
+#      start_value: 0
+#      end_value: 1
+#      tick_interval: 10s
+#      direction: up
+#      start_running: false
+#      control_events:
+#         - action: restart
+#           event: light_right_multiplier
+
+show_player:
+#   timer_right_multiplier_started:
+#      flash:
+#         key: rightside
+#         speed: 10
+#         show_tokens:
+#            lights: l_bonusXRight
+#   timer_right_multiplier_complete:
+#      off:
+#         key: rightside
+#         show_tokens:
+#            lights: l_bonusXRight
+
+shots:
+  lanes_1:
+    switches: s_lane_1
+    show_tokens:
+       lights: l_lane_1
+    profile: lanes_profile
+#    hit_events: spot_road_r
+  lanes_2:
+    switches: s_lane_2
+    show_tokens:
+       lights: l_lane_2
+    profile: lanes_profile
+#    hit_events: spot_road_o
+  lanes_3:
+    switches: s_lane_3
+    show_tokens:
+       lights: l_lane_3
+#    hit_events: spot_road_a
+    profile: lanes_profile
+  lanes_4:
+    switches: s_lane_4
+    show_tokens:
+       lights: l_lane_4
+#    hit_events: spot_road_a
+    profile: lanes_profile
+
+
+shot_profiles:
+  lanes_profile:
+    states:
+      - name: unlit  # step 1
+        show: off
+        speed: 6
+      - name: lit  # step 2
+        show: on
+    loop: false
+
+
+shot_groups:
+   group_lanes:
+       shots: lanes_1, lanes_2, lanes_3, lanes_4
+       rotate_left_events: s_l_flipper_eos_active
+       rotate_right_events: s_r_flipper_eos_active
+       reset_events: group_lanes_lit_complete
+       enable_events: ball_started
+       disable_events: ball_ending

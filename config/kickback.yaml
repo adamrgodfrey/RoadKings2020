@@ -1,0 +1,24 @@
+#config_version=5
+
+
+#     ______            _____            __   _      __   __               __
+#    / ____/___  ____  / __(_)___ __    / /__(_)____/ /__/ /_  ____ ______/ /__
+#   / /   / __ \/ __ \/ /_/ / __ `(_)  / //_/ / ___/ //_/ __ \/ __ `/ ___/ //_/
+#  / /___/ /_/ / / / / __/ / /_/ /    / ,< / / /__/ ,< / /_/ / /_/ / /__/ ,<
+#  \____/\____/_/ /_/_/ /_/\__, (_)  /_/|_/_/\___/_/|_/_.___/\__,_/\___/_/|_|
+#                         /____/
+
+
+# This is the kickback in the left outlane.  Processing is handled by the rescue mode (see rescue.yaml)
+# TODO - sort out the Yagov kicker - need to fix coil in my machine first
+autofire_coils:
+   power_kickback:
+      coil: c_power_kicker_l_outlane
+      switch: s_l_outlane
+      enable_events: rescue_enabled
+      debug: false
+      ball_search_order: 0 # ball can't get stuck here
+      disable_events: rescue_off
+#   yagov_kickback:
+#      coil: c_yagovKickBack
+#      switch: s_yagov

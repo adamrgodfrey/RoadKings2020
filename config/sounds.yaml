@@ -1,0 +1,37 @@
+#config_version=5
+
+
+#     ______            _____                                       __
+#    / ____/___  ____  / __(_)___ __    _________  __  ______  ____/ /____
+#   / /   / __ \/ __ \/ /_/ / __ `(_)  / ___/ __ \/ / / / __ \/ __  / ___/
+#  / /___/ /_/ / / / / __/ / /_/ /    (__  ) /_/ / /_/ / / / / /_/ (__  )
+#  \____/\____/_/ /_/_/ /_/\__, (_)  /____/\____/\__,_/_/ /_/\__,_/____/
+#                         /____/
+
+
+sound_system:
+    master_volume: 0.75
+    tracks:
+       music:
+          type: standard
+          simultaneous_sounds: 1
+          volume: 0.5
+       voice:
+          type: standard
+          simultaneous_sounds: 1
+          volume: 0.7
+       sfx:
+          type: standard
+          simultaneous_sounds: 8
+          volume: 0.4
+
+assets:
+    sounds:
+        default:
+            load: on_demand
+        music:
+            track: music
+        sfx:
+            track: sfx
+        voice:
+            track: voice

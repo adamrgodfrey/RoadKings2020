@@ -1,0 +1,249 @@
+#config_version=5
+
+
+#      __  ___          __
+#     /  |/  /___  ____/ /__  _    ________  ____________  _____
+#    / /|_/ / __ \/ __  / _ \(_)  / ___/ _ \/ ___/ ___/ / / / _ \
+#   / /  / / /_/ / /_/ /  __/    / /  /  __(__  ) /__/ /_/ /  __/
+#  /_/  /_/\____/\__,_/\___(_)  /_/   \___/____/\___/\__,_/\___/
+#
+
+
+# This mode handles the kickback called 'Rescue' in the left outlane.
+# The machine has an autofire coil defined (see kickback.yaml) which is enabled with event
+# rescue_enabled and switched off with event rescue_off
+# In the centre of the playfield are 2 'rescue' targets with associated lamps.  The lamps come on
+# alternately, with a small pause in between.
+# So the left lamp is lit, then goes off and after a pause the right lamp comes on and so on.
+# If the target is hit while it's associated lamp is lit, then this will enabled the kickback
+# and the lamp in the left outlane will be on to indicate this
+# After the kickback has fired, there is a 2 second grace period during which the outlane lamp flashes
+# in case the ball either doesn't kick properly or goes back down there again.
+
+mode:
+   start_events: ball_starting
+   priority: 110
+
+
+
+# Variable - kickback_status - Used to track the left outlane kickback status
+# Values   - ON    - kickback is active (rule is programmed to kick via autofire coil)
+#            OFF   - not active
+#            GRACE - after the kickback fires, it remains active for 2 seconds.
+#
+# Variable - rescue_target_state - Keeps track of if the left or right rescue target is lit
+# Values   - L     - left target currently lit
+#            R     - right target currently lit
+#            OFF   - neither target currently lit
+
+variable_player:
+   rescue_enabled:
+      kickback_status:
+         action: set
+         string : ON
+#      score: 10000 # will get the other 5000 from the base mode
+   rescue_grace:
+      kickback_status:
+         action: set
+         string : GRACE
+   rescue_off:
+      kickback_status:
+         action: set
+         string : OFF
+#      score: 20000 # will get the other 5000 from the base mode
+   s_l_outlane_active{not devices.timers.detour_ramp_made_kb.running}:
+#   score_l_outlane_points:
+      score: 25000 * current_player.playfield_multiplier_value
+#   s_l_outlane_active{not devices.timers.your_timer.running}:
+#   score_l_outlane_drain:
+#      score: 25000|block
+#   rescue_target_left_lit:
+#      rescue_target_state:
+#         action: set
+#         string: left_is_lit
+#   rescue_target_right_lit:
+#      rescue_target_state:
+#         action: set
+#         string: right_is_lit
+#   rescue_target_none:
+#      rescue_target_state:
+#         action: set
+#         string: OFF
+
+
+
+# Use the event_playet section to turn some of the more complex conditional events into easier to read ones.
+event_player:
+#   s_rightRescue_active{current_player.rescue_target_state=='right_is_lit'}: # hit the right target and it's lit
+#      - rescue_enabled
+#   s_leftRescue_active{current_player.rescue_target_state=='left_is_lit'}: # hit the left target and it's lit
+#      - rescue_enabled
+#   s_l_outlane_active{current_player.kickback_status=='ON' and not devices.timers.detour_ramp_made_kb.running}: # down the outlane, start the grace period if active
+#      - rescue_grace
+   s_l_outlane_active:
+      - rescue_grace
+#   s_c_ramp_enter_active{current_player.kickback_status=='ON'}:
+#      - detour_grace_lit_enabled
+#   s_c_ramp_enter_active{current_player.kickback_status=='OFF'}:
+#      - detour_grace_unlit_enabled
+   s_c_ramp_enter_active:
+      - detour_ramp_made
+      - rescue_enabled
+   timer_detour_grace_lit_complete:
+      - rescue_enabled
+   timer_detour_grace_unlit_complete:
+      - rescue_off
+
+#   s_l_outlane_active{current_player.kickback_status=='ON'}: # down the outlane, start the grace period if active
+#      - score_l_outlane_points
+#   s_l_outlane_active{current_player.kickback_status=='OFF'}: # down the outlane, start the grace period if active
+#      - score_l_outlane_drain
+   timer_rescue_grace_complete: # 2 second grace is over
+      - rescue_off
+   road_lit_complete:
+      - rescue_enabled
+   kings_lit_complete:
+      - rescue_enabled
+
+
+# Consider the 2 rescue targets as a state machine.  It moves between 4 states
+# such that either a lamp is lit, or they're both off
+#state_machines:
+#   rescue_target:
+#      states:
+#         start:
+#            events_when_started: dummy_event
+#         left:
+#            events_when_started: rescue_target_left_lit
+#         left_to_right:
+#            events_when_started: rescue_target_none
+#         right:
+#            events_when_started: rescue_target_right_lit
+#         right_to_left:
+#            events_when_started: rescue_target_none
+#      transitions:
+#         - source: start
+#           target: left
+#           events: timer_rescue_target_cycle_tick
+#         - source: left
+#           target: left_to_right
+#           events: timer_rescue_target_cycle_tick
+#         - source: left_to_right
+#           target: right
+#           events: timer_rescue_target_cycle_tick
+#         - source: right
+#           target: right_to_left
+#           events: timer_rescue_target_cycle_tick
+#         - source: right_to_left
+#           target: left
+#           events: timer_rescue_target_cycle_tick
+
+
+# Just one slide that will display briefly when the kickback is active
+slide_player:
+   rescue_enabled:
+     slide_rescue:
+        target: dmd
+        expire: 1s
+        widgets:
+          - type: text
+            text: Power Kick READY!
+            font_size: 15
+            color: orange
+
+show_player:
+   rescue_enabled:
+      on:
+         show_tokens:
+            light: l_power_kick
+   rescue_grace:
+      lamp_on:
+         action: stop
+      blink:
+         speed: 4
+         show_tokens:
+            lamp: l_power_kick
+   detour_grace_unlit_enabled:
+      lamp_on:
+         action: stop
+      blink:
+         speed: 4
+         show_tokens:
+            lamp: l_power_kick
+#   rescue_target_left_lit:
+#      lamp_on:
+#         key: rescueLR
+#         show_tokens:
+#            lamp: l_leftRescue
+#   rescue_target_right_lit:
+#      lamp_on:
+#         key: rescueLR
+#         show_tokens:
+#            lamp: l_rightRescue
+#   rescue_target_none:
+#      lamp_on:
+#         action: stop
+#         key: rescueLR
+   rescue_off:
+      off:
+         show_tokens:
+            light: l_power_kick
+
+
+timers:
+   # Handles the grace period after the kickback fires
+   rescue_grace:
+      start_value: 2
+      end_value: 0
+      direction: down
+      control_events:
+         - event: rescue_grace
+           action: start
+         - event: rescue_enabled
+           action: stop
+         - event: rescue_enabled
+           action: reset
+      start_running: false
+
+   detour_grace_lit:
+      start_value: 3
+      end_value: 0
+      direction: down
+      control_events:
+         - event: detour_grace_lit_enabled
+           action: start
+         - event: rescue_enabled
+           action: stop
+         - event: rescue_enabled
+           action: reset
+      start_running: false
+
+   detour_grace_unlit:
+      start_value: 3
+      end_value: 0
+      direction: down
+      control_events:
+         - event: detour_grace_unlit_enabled
+           action: start
+         - event: rescue_enabled
+           action: stop
+         - event: rescue_enabled
+           action: reset
+      start_running: false
+
+   detour_ramp_made_kb:
+      start_value: 3
+      end_value: 0
+      direction: down
+      control_events:
+         - event: detour_ramp_made
+           action: start
+         - event: rescue_enabled
+           action: stop
+         - event: rescue_enabled
+           action: reset
+      start_running: false
+   # Just used to generate a tick to flip/flop the central rescue targets
+#   rescue_target_cycle:
+#      start_value: 0
+#      start_running: true

@@ -1,0 +1,175 @@
+#config_version=5
+
+
+
+#      __  ___          __          __                             __      __                        __
+#     /  |/  /___  ____/ /__  _    / /_____  ____ ___  _________ _/ /_    / /_____ __________ ____  / /______
+#    / /|_/ / __ \/ __  / _ \(_)  / __/ __ \/ __ `__ \/ ___/ __ `/ __/   / __/ __ `/ ___/ __ `/ _ \/ __/ ___/
+#   / /  / / /_/ / /_/ /  __/    / /_/ /_/ / / / / / / /__/ /_/ / /_    / /_/ /_/ / /  / /_/ /  __/ /_(__  )
+#  /_/  /_/\____/\__,_/\___(_)   \__/\____/_/ /_/ /_/\___/\__,_/\__/____\__/\__,_/_/   \__, /\___/\__/____/
+#                                                                 /_____/             /____/
+
+# This mode generally runs if there is a ball in play.  It handles both sets of T-O-M-C-A-T targets
+
+# The top and bottom sets of targets work as a single set - so hitting the letter 'M' in the top set
+# also spots it in the lower set and vice-versa.
+# Getting all the letters lit will light a lock and then start over.
+# Other things going on in the game can also spot a random letter
+
+mode:
+   start_events: ball_starting
+   priority: 120
+
+event_player:
+   detour_right_shot_lit_hit:
+      - right_detour_collected
+   detour_left_shot_lit_hit:
+      - left_detour_collected
+   right_detour_collected{device.shots.detour_left_shot.state_name!='lit'}:
+      - detour_off
+   left_detour_collected{device.shots.detour_right_shot.state_name!='lit'}:
+      - detour_off
+
+show_player:
+   road_lit_complete:
+      on:
+         show_tokens:
+            light: l_detour_when_lit
+   kings_lit_complete:
+      on:
+         show_tokens:
+            light: l_detour_when_lit
+   detour_off:
+      off:
+         show_tokens:
+            light: l_detour_when_lit
+
+
+
+#accruals:
+
+counters:
+    detour_value:
+        count_events: detour_left_seq_hit, detour_right_seq_hit
+        events_when_hit: detour_value_increased
+        starting_count: 30
+        count_interval: 50
+        direction: up
+        reset_on_complete: false
+        persist_state: true
+
+#   attempt_spot_tomcat_a{device.shots.tomcat_a.state_name!='lit'}:
+#      - spot_tomcat_a
+#   attempt_spot_tomcat_a{device.shots.tomcat_a.state_name=='lit'}:
+#      - spot_tomcat_letter
+#   attempt_spot_tomcat_second_t{device.shots.tomcat_second_t.state_name!='lit'}:
+#      - spot_tomcat_second_t
+#   attempt_spot_tomcat_second_t{device.shots.tomcat_second_t.state_name=='lit'}:
+#      - spot_tomcat_letter
+
+variable_player:
+    detour_left_shot_lit_hit:
+       score: 1000 * (device.counters.detour_value.value + 1)
+    detour_right_shot_lit_hit:
+       score: 1000 * (device.counters.detour_value.value + 1)
+    detour_left_seq_hit:
+       score: 15000 * current_player.playfield_multiplier_value
+    detour_right_seq_hit:
+       score: 15000 * current_player.playfield_multiplier_value
+
+slide_player:
+  detour_value_increased:
+     slide_road:
+        target: dmd
+        expire: 1s
+        widgets:
+          - type: text
+            text: 1000 * (device.counters.detour_value.value + 1)
+            font_size: 15
+            color: yellow
+  detour_left_shot_lit_hit:
+     slide_kings:
+        target: dmd
+        expire: 1s
+        widgets:
+          - type: text
+            text: 1000 * (device.counters.detour_value.value + 1)
+            font_size: 15
+            color: red
+  detour_right_shot_lit_hit:
+     slide_kings:
+        target: dmd
+        expire: 1s
+        widgets:
+          - type: text
+            text: 1000 * (device.counters.detour_value.value + 1)
+            font_size: 15
+            color: red
+
+
+
+
+sequence_shots:
+     detour_left_seq:
+         switch_sequence: s_c_ramp_enter, s_l_outlane
+         sequence_timeout: 3s
+#         enable_events:
+#         disable_events: ball_ending
+     detour_right_seq:
+         switch_sequence: s_c_ramp_enter, s_cent_ramp_r_exit
+         sequence_timeout: 3s
+#         enable_events:
+#         disable_events: ball_ending
+
+shots:
+  detour_left_shot:
+    show_tokens:
+       lights: l_l_collect_detour
+    profile: detour_profile
+    enable_events: road_lit_complete
+    disable_events: detour_left_shot_lit_hit
+    hit_events: detour_left_seq_hit
+  detour_right_shot:
+    show_tokens:
+       lights: l_r_collect_detour
+    profile: detour_profile
+    enable_events: kings_lit_complete
+    disable_events: detour_right_shot_lit_hit
+    hit_events: detour_right_seq_hit
+
+
+#  tomcat_a:
+#    switches: s_lowerRightA s_upperRightA
+#    show_tokens:
+#       lights: l_lowerRightA l_upperRightA
+#    profile: tomcat_profile
+#    hit_events: spot_tomcat_a
+#  tomcat_second_t:
+#    switches: s_lowerRightT s_upperRightT
+#    show_tokens:
+#       lights: l_lowerRightT l_upperRightT
+#    profile: tomcat_profile
+#    hit_events: spot_tomcat_second_t
+
+
+
+shot_profiles:
+  detour_profile:
+    states:
+      - name: lit # step 1
+        show: on
+        speed: 6
+      - name: unlit  # step 2
+        show: off
+    loop: false
+
+
+
+
+#shot_groups:
+#   road:
+#      shots: road_r road_o road_a road_d
+#      restart_events: roadkings_complete
+#   kings:
+#      shots: road_k road_i road_n road_g road_s
+#      restart_events: roadkings_complete

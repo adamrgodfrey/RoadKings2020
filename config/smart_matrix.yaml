@@ -1,0 +1,37 @@
+#config_version=5
+
+
+#     ______            _____                                      __                       __       _     
+#    / ____/___  ____  / __(_)___ __    _________ ___  ____ ______/ /_     ____ ___  ____ _/ /______(_)  __
+#   / /   / __ \/ __ \/ /_/ / __ `(_)  / ___/ __ `__ \/ __ `/ ___/ __/    / __ `__ \/ __ `/ __/ ___/ / |/_/
+#  / /___/ /_/ / / / / __/ / /_/ /    (__  ) / / / / / /_/ / /  / /_     / / / / / / /_/ / /_/ /  / />  <  
+#  \____/\____/_/ /_/_/ /_/\__, (_)  /____/_/ /_/ /_/\__,_/_/   \__/____/_/ /_/ /_/\__,_/\__/_/  /_/_/|_|  
+#                         /____/                                  /_____/                                  
+
+# F14 has 2 smartmatrix displays - the main one plus a smaller one on the apron.
+hardware:
+    rgb_dmd: smartmatrix
+
+smartmatrix:
+    smartmatrix_1:
+       port: com3
+       baud: 2500000
+       old_cookie: false
+    smartmatrix_2:
+       port: com5
+       baud: 2500000
+       old_cookie: false
+       
+rgb_dmds:
+  smartmatrix_1:
+     platform: smartmatrix
+     brightness: .5
+     source_display: dmd
+     fps: 25      
+  smartmatrix_2:
+     platform: smartmatrix
+     only_send_changes: true
+     brightness: .5
+     source_display: dmd_mini
+     channel_order: rbg
+     fps: 25      

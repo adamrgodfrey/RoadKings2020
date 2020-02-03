@@ -1,0 +1,132 @@
+#config_version=5
+
+#####################################################################################
+##     ____   _______   _________________  _  _____    ________  ___  ______________
+##    / __/__<  / / /  / __/ __/ ___/ __ \/ |/ / _ \  / __/ __ \/ _ \/_  __/  _/ __/
+##   / _//___/ /_  _/ _\ \/ _// /__/ /_/ /    / // / _\ \/ /_/ / , _/ / / _/ // _/
+##  /_/     /_/ /_/  /___/___/\___/\____/_/|_/____/ /___/\____/_/|_| /_/ /___/___/
+##
+## A P-ROC Project by Mark Sunnucks
+#####################################################################################
+
+#      __  ___      _                           _____
+#     /  |/  /___ _(_)___     _________  ____  / __(_)___ _
+#    / /|_/ / __ `/ / __ \   / ___/ __ \/ __ \/ /_/ / __ `/
+#   / /  / / /_/ / / / / /  / /__/ /_/ / / / / __/ / /_/ /
+#  /_/  /_/\__,_/_/_/ /_/   \___/\____/_/ /_/_/ /_/\__, /
+#                                                 /____/
+
+#                               `\\             //'
+#                                 \\           //
+#                                  \\. __-__ .//
+#                        ___/-_.-.__`/~     ~\'__.-._-\___
+# .|.       ___________.'__/__ ~-[ \.\'-----'/./ ]-~ __\__`.___________       .|.
+# ~o~~~~~~~--------______-~~~~~-_/_/ |   .   | \_\_-~~~~~-______--------~~~~~~~o~
+# ' `               + + +  (X)(X)  ~--\__ __/--~  (X)(X)  + + +               ' `
+#                              (X) `/.\' ~ `/.\' (X)
+#                                  "\_/"   "\_/"
+
+# Second sortie V2
+config:
+   - display.yaml
+   - prochardware.yaml
+   - devices.yaml
+   - kickback.yaml
+   - simple_shows.yaml
+   - sounds.yaml
+#   - diverters.yaml
+#   - smart_matrix.yaml
+#   - real_dmd.yaml
+
+player_vars:
+   rescue_enabled:
+      initial_value: 0
+#   rescue_target_state:
+#      initial_value: OFF
+#      value_type: str
+   kickback_status:
+      initial_value: OFF
+      value_type: str
+   bonus_score:
+      initial_value: 10
+   lit_target:
+      initial_value: 1
+#   left_multiplier_lit:
+#      initial_value: False
+#      value_type: str
+#   right_multiplier_lit:
+#      initial_value: False
+#      value_type: str
+#   spinner_2K_lit:
+#      initial_value: False
+#      value_type: str
+#   launch_bonus:
+#      initial_value: 0
+   lock1_status:
+      initial_value: unlit
+      value_type: str
+   lock2_status:
+      initial_value: unlit
+      value_type: str
+   lock3_status:
+      initial_value: unlit
+      value_type: str
+   playfield_multiplier:
+      initial_value: 1
+
+# Turn on the GI and the radar insert
+#show_player:
+#   init_done:
+#      on:
+#         show_tokens:
+#            lights: gi, radar
+
+smart_virtual:
+   simulate_manual_plunger: true
+   simulate_manual_plunger_timeout: 5s
+
+#kivy_config:
+#  graphics:
+#    multisamples: 0
+
+#settings:
+#   roadkings_spot_both:
+#      label: Spot Both RoadKings Letters
+#      key_type: str
+#      values:
+#         YES: Spot both letters
+#         NO: Spot single letter
+#      default: YES
+#      sort: 100
+
+modes:
+   - base
+   - powerkick
+   - bonus
+   - bonus_manager
+#   - orbit
+#   - yagov
+#   - hurry_up_right
+#   - lock_handler
+#   - multiball
+   - roadkings_targets
+#   - detour
+   - lanes
+   - playfield_multiplier
+#   - tomcat_targets
+
+virtual_platform_start_active_switches:
+   - s_r_trough
+   - s_l_trough
+
+# TODO - actually this isn't the source device, as there are 3 source devices (each of the locks)
+playfields:
+   playfield:
+       default_source_device: bd_plunger_lane
+       tags: default
+
+keyboard:
+   z:
+      switch:   s_r_target
+   s:
+      switch:   s_credit_button

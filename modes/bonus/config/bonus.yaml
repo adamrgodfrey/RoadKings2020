@@ -1,0 +1,60 @@
+#config_version=5
+
+
+#      __  ___          __          __
+#     /  |/  /___  ____/ /__  _    / /_  ____  ____  __  _______
+#    / /|_/ / __ \/ __  / _ \(_)  / __ \/ __ \/ __ \/ / / / ___/
+#   / /  / / /_/ / /_/ /  __/    / /_/ / /_/ / / / / /_/ (__  )
+#  /_/  /_/\____/\__,_/\___(_)  /_.___/\____/_/ /_/\__,_/____/
+#
+
+# Rides on the standard bonus mode handling supplied by MPF
+mode_settings:
+   display_delay_ms: 1s
+   hurry_up_delay_ms: 0
+   bonus_entries:
+    - event: base_bonus
+      score: 1000 * current_player.bonus_score
+
+
+slide_player:
+   bonus_start:
+     slide_bonus:
+        target: dmd
+        widgets:
+          - type: text
+            text: END OF BALL BONUS
+            font_size: 10
+            color: white
+   base_bonus:
+     slide_bonus:
+        target: dmd
+        widgets:
+          - type: text
+            text: BONUS (score)
+            font_size: 10
+            color: white
+   bonus_subtotal:
+     slide_bonus:
+        target: dmd
+        widgets:
+          - type: text
+            text: BONUS (score)
+            font_size: 10
+            color: white
+   bonus_multiplier:
+     slide_mulitplier:
+        target: dmd
+        widgets:
+          - type: text
+            text: X (multiplier)
+            font_size: 10
+            color: white
+   bonus_total:
+     slide_total:
+        target: dmd
+        widgets:
+          - type: text
+            text: TOTAL (score)
+            font_size: 10
+            color: white

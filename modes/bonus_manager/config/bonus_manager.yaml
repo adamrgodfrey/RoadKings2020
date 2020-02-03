@@ -1,0 +1,369 @@
+#config_version=5
+
+
+#      __  ___          __          __
+#     /  |/  /___  ____/ /__  _    / /_  ____  ____  __  _______     ____ ___  ____ _____  ____ _____ ____  _____
+#    / /|_/ / __ \/ __  / _ \(_)  / __ \/ __ \/ __ \/ / / / ___/    / __ `__ \/ __ `/ __ \/ __ `/ __ `/ _ \/ ___/
+#   / /  / / /_/ / /_/ /  __/    / /_/ / /_/ / / / / /_/ (__  )    / / / / / / /_/ / / / / /_/ / /_/ /  __/ /
+#  /_/  /_/\____/\__,_/\___(_)  /_.___/\____/_/ /_/\__,_/____/____/_/ /_/ /_/\__,_/_/ /_/\__,_/\__, /\___/_/
+#                                                           /_____/                           /____/
+
+# The end of ball bonus on F-14 is a multiple of 1000, minimum value is 0 and maximum is 127,000
+# Counting it is simple, but displaying it is tricky as there are 7 lamps on the playfield used to
+# show it.  1K, 2K, 4K, 8K, 16K, 32K and 64K.  You add up all the lit lamps to determine the total
+# Internally we track the bonus as a number between 0 and 127, it gets multplied by 1000 before being awarded
+
+# Since we need to only do something with the bonus if we didn't reach 127 yet, any mode that wants to try and
+# increment the bonus will raise the event 'increment_bonus' or 'increment_bonus_5k'
+# This mode will then take care of handling that, and will post 'add_to_bonus' internally if bonus does go up
+
+
+mode:
+   start_events: ball_starting
+   priority: 100
+
+variable_player:
+   mode_bonus_manager_started:
+      bonus_score:
+         action: set
+         int: 0
+      bonus_multiplier:
+         action: set
+         int: 1
+   add_to_bonus:
+      bonus_score: 1
+   add_to_multiplier{current_player.bonus_multiplier < 5}:
+      bonus_multiplier: 1
+
+# Use a simple local event so long as we didn't get to 99 yet
+event_player:
+  increment_bonus{current_player.bonus_score < 99}:
+      - add_to_bonus
+  inc_bonus_default_hit: # from the shot inc_bonus below
+      - increment_bonus
+  timer_bonus_5k_tick:
+      - increment_bonus
+  timer_bonus_4k_tick:
+      - increment_bonus
+  timer_bonus_3k_tick:
+      - increment_bonus
+  timer_bonus_2k_tick:
+      - increment_bonus
+  detour_left_seq_hit:
+      - increment_bonus_4k
+  detour_right_seq_hit:
+      - increment_bonus_4k
+  multiball_lock_lock1_full:
+      - increment_bonus_2k
+  multiball_lock_lock2_full:
+      - increment_bonus_2k
+  multiball_lock_lock3_full:
+      - increment_bonus_2k
+  road_lit_complete:
+      - increment_bonus_5k
+  kings_lit_complete:
+      - increment_bonus_3k
+  group_lanes_unlit_hit:
+      - increment_bonus_2k
+
+# all the switches that can increment the bonus
+# maybe change this to events later....
+#shots:
+#  inc_bonus:
+#    switches: s_lane_1 s_lane_2 s_lane_3 s_lane_4
+#    restart_events: inc_bonus_default_hit
+
+# Displaying the bonus on the lamps involves a complicated set of counters and shows.
+# TODO - put more comments in here
+show_player:
+  logicblock_bonus_count_1K-10k_updated{value < 1}:
+      off:
+         key: 1K
+         show_tokens:
+            light: l_bonus_1k
+  logicblock_bonus_count_1K-10k_updated{value >= 1}:
+      on:
+         key: 1K
+         show_tokens:
+            light: l_bonus_1k
+  logicblock_bonus_count_1K-10k_updated{value < 2}:
+      off:
+         key: 2K
+         show_tokens:
+            light: l_bonus_2k
+  logicblock_bonus_count_1K-10k_updated{value >= 2}:
+      on:
+         key: 2K
+         show_tokens:
+            light: l_bonus_2k
+  logicblock_bonus_count_1K-10k_updated{value < 3}:
+      off:
+         key: 3K
+         show_tokens:
+            light: l_bonus_3k
+  logicblock_bonus_count_1K-10k_updated{value >= 3}:
+      on:
+         key: 3K
+         show_tokens:
+            light: l_bonus_3k
+  logicblock_bonus_count_1K-10k_updated{value < 4}:
+      off:
+         key: 4K
+         show_tokens:
+            light: l_bonus_4k
+  logicblock_bonus_count_1K-10k_updated{value >= 4}:
+      on:
+         key: 4K
+         show_tokens:
+            light: l_bonus_4k
+  logicblock_bonus_count_1K-10k_updated{value < 5}:
+      off:
+         key: 5K
+         show_tokens:
+            light: l_bonus_5k
+  logicblock_bonus_count_1K-10k_updated{value >= 5}:
+      on:
+         key: 5K
+         show_tokens:
+            light: l_bonus_5k
+  logicblock_bonus_count_1K-10k_updated{value < 6}:
+      off:
+         key: 6K
+         show_tokens:
+            light: l_bonus_6k
+  logicblock_bonus_count_1K-10k_updated{value >= 6}:
+      on:
+         key: 6K
+         show_tokens:
+            light: l_bonus_6k
+  logicblock_bonus_count_1K-10k_updated{value < 7}:
+      off:
+         key: 7K
+         show_tokens:
+            light: l_bonus_7k
+  logicblock_bonus_count_1K-10k_updated{value >= 7}:
+      on:
+         key: 7K
+         show_tokens:
+            light: l_bonus_7k
+  logicblock_bonus_count_1K-10k_updated{value < 8}:
+      off:
+         key: 8K
+         show_tokens:
+            light: l_bonus_8k
+  logicblock_bonus_count_1K-10k_updated{value >= 8}:
+      on:
+         key: 8K
+         show_tokens:
+            light: l_bonus_8k
+  logicblock_bonus_count_1K-10k_updated{value < 9}:
+      off:
+         key: 9K
+         show_tokens:
+            light: l_bonus_9k
+  logicblock_bonus_count_1K-10k_updated{value >= 9}:
+      on:
+         key: 9K
+         show_tokens:
+            light: l_bonus_9k
+  logicblock_bonus_count_10K_updated{value < 10}:
+      off:
+         key: 9K
+         show_tokens:
+            light: l_bonus_10k
+  logicblock_bonus_count_10K_updated{value >= 10}:
+      on:
+         key: 9K
+         show_tokens:
+            light: l_bonus_10k
+  logicblock_bonus_count_20K_updated{value < 20}:
+      off:
+         key: 20K
+         show_tokens:
+            light: l_bonus_20k
+  logicblock_bonus_count_20K_updated{value >= 20}:
+      on:
+         key: 20K
+         show_tokens:
+            light: l_bonus_20k
+  logicblock_bonus_count_40K_updated{value < 40}:
+      off:
+         key: 40K
+         show_tokens:
+            light: l_bonus_40k
+  logicblock_bonus_count_40K_updated{value >= 40}:
+      on:
+         key: 40K
+         show_tokens:
+            light: l_bonus_40k
+  logicblock_bonus_count_60K_updated{value < 60}:
+      off:
+         key: 60K
+         show_tokens:
+            light: l_bonus_60k
+  logicblock_bonus_count_60K_updated{value >= 60}:
+      on:
+         key: 60K
+         show_tokens:
+            light: l_bonus_60k
+  logicblock_bonus_count_80K_updated{value < 80}:
+      off:
+         key: 80K
+         show_tokens:
+            light: l_bonus_80k
+  logicblock_bonus_count_80K_updated{value >= 80}:
+      on:
+         key: 80K
+         show_tokens:
+            light: l_bonus_80k
+
+
+
+
+  player_bonus_multiplier{value==2}:
+      on:
+         key: multiplier
+         show_tokens:
+            lights: l_2x
+  player_bonus_multiplier{value==3}:
+      on:
+         key: multiplier
+         show_tokens:
+            lights: l_3x
+  player_bonus_multiplier{value==4}:
+      on:
+         key: multiplier
+         show_tokens:
+            lights: l_4x
+  player_bonus_multiplier{value==5}:
+      on:
+         key: multiplier
+         show_tokens:
+            lights: l_5x
+
+
+counters:
+   bonus_count_1K-10k:
+      count_events: add_to_bonus
+      starting_count: 0
+      count_complete_value: 10
+      direction: up
+      disable_on_complete: false
+#   bonus_count_2K:
+#      count_events: add_to_bonus
+#      starting_count: 0
+#      count_complete_value: 4
+#      direction: up
+#      disable_on_complete: false
+   bonus_count_10K:
+      count_events: add_to_bonus
+      starting_count: 0
+      count_complete_value: 20
+      direction: up
+      disable_on_complete: false
+   bonus_count_20K:
+      count_events: add_to_bonus
+      starting_count: 0
+      count_complete_value: 99
+      direction: up
+      disable_on_complete: false
+   bonus_count_30K:
+      count_events: add_to_bonus
+      starting_count: 0
+      count_complete_value: 40
+      direction: up
+      disable_on_complete: false
+   bonus_count_40K:
+      count_events: add_to_bonus
+      starting_count: 0
+      count_complete_value: 99
+      direction: up
+      disable_on_complete: false
+   bonus_count_50K:
+      count_events: add_to_bonus
+      starting_count: 0
+      count_complete_value: 60
+      direction: up
+      disable_on_complete: false
+   bonus_count_60K:
+      count_events: add_to_bonus
+      starting_count: 0
+      count_complete_value: 99
+      direction: up
+      disable_on_complete: false
+   bonus_count_70K:
+      count_events: add_to_bonus
+      starting_count: 0
+      count_complete_value: 80
+      direction: up
+      disable_on_complete: false
+   bonus_count_80K:
+      count_events: add_to_bonus
+      starting_count: 0
+      count_complete_value: 99
+      direction: up
+      disable_on_complete: false
+   bonus_count_90K:
+      count_events: add_to_bonus
+      starting_count: 0
+      count_complete_value: 100
+      direction: up
+      disable_on_complete: false
+
+# Used to add 5k to the bonus.  This is kinda kludgy, but rather than trying to handle the
+# bonus overflowing by various amounts, this timer is used to generate 5 ticks whenever the
+# increment_bonus_5k event is posted.  These ticks each then get handled as a single 'increment_bonus'
+# event in the event_player above
+timers:
+   bonus_5k:
+      start_value: 0
+      end_value: 5
+      direction: up
+      tick_interval: 10ms
+      control_events:
+         - event: increment_bonus_5k
+           action: start
+         - event: timer_bonus_5k_complete
+           action: stop
+         - event: timer_bonus_5k_complete
+           action: reset
+      start_running: false
+   bonus_4k:
+      start_value: 0
+      end_value: 4
+      direction: up
+      tick_interval: 10ms
+      control_events:
+         - event: increment_bonus_4k
+           action: start
+         - event: timer_bonus_4k_complete
+           action: stop
+         - event: timer_bonus_4k_complete
+           action: reset
+      start_running: false
+   bonus_3k:
+      start_value: 0
+      end_value: 3
+      direction: up
+      tick_interval: 10ms
+      control_events:
+         - event: increment_bonus_3k
+           action: start
+         - event: timer_bonus_3k_complete
+           action: stop
+         - event: timer_bonus_3k_complete
+           action: reset
+      start_running: false
+   bonus_2k:
+      start_value: 0
+      end_value: 2
+      direction: up
+      tick_interval: 10ms
+      control_events:
+         - event: increment_bonus_2k
+           action: start
+         - event: timer_bonus_2k_complete
+           action: stop
+         - event: timer_bonus_2k_complete
+           action: reset
+      start_running: false
